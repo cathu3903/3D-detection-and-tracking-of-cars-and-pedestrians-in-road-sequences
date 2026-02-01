@@ -6,7 +6,7 @@ from stereo_depth_r import get_depth_map_kitti_optimized
 
 
 class KittiStereoYoloSystemV26:
-    def __init__(self, drive_path, model_path="yolo26n.pt", iou=0.6, conf=0.3):
+    def __init__(self, drive_path, model_path="yolo26n.pt", conf=0.4):
         self.drive_path = drive_path
         # Color images
         self.left_dir = os.path.join(drive_path, "image_02/data")
@@ -19,7 +19,6 @@ class KittiStereoYoloSystemV26:
         # 1) Detector: YOLOv26 model with built-in tracking
         self.model = YOLO(model_path)
         self.conf = conf
-        self.iou = iou
 
         # Only keep vehicles and pedestrians
         self.target_names = {"person", "car", "bus", "truck", "motorcycle", "bicycle"}
@@ -93,11 +92,10 @@ class KittiStereoYoloSystemV26:
     def _detect_and_track_with_yolo26(self, frame_bgr):
         results = self.model.track(
             frame_bgr,
-            persist=True,
-            conf=self.conf,
-            iou=self.iou,
-            verbose=False,
-            tracker="botsort.yaml",
+            persist=True,       # enable tracking
+            conf=self.conf,     # confidence threshold set to 0.5, reduce the detection noise
+            verbose=False,      # not print debug info
+            tracker="bytetrack.yaml", # charge the default parameters of tracker botsort
         )
 
         if not results or len(results) == 0:
@@ -107,16 +105,18 @@ class KittiStereoYoloSystemV26:
         track_ids = []
 
         for r in results:
+            # Skip if no boxes
             if r.boxes is None:
                 continue
             for box in r.boxes:
                 cls_id = int(box.cls[0])
                 if cls_id not in self.target_ids:
                     continue
-
+                # Get target box
                 x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                 track_id = int(box.id[0]) if box.id is not None else -1
 
+                # convert into cv2 box
                 x, y, w, h = int(x1), int(y1), int(x2 - x1), int(y2 - y1)
                 if w > 0 and h > 0:
                     boxes.append((x, y, w, h))
@@ -230,6 +230,6 @@ class KittiStereoYoloSystemV26:
 
 
 if __name__ == "__main__":
-    drive_root = "./data/raw_data/2011_09_26/2011_09_26_drive_0017_sync"
+    drive_root = "./data/raw_data/2011_09_26/2011_09_26_drive_0013_sync"
     system = KittiStereoYoloSystemV26(drive_root, model_path="yolo26n.pt")
     system.run()
