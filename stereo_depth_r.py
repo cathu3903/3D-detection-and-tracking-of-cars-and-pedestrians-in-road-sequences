@@ -11,7 +11,7 @@ def get_depth_map_kitti_optimized(img_l, img_r, P2, P3):
 
     # KITTI特定优化参数
     # KITTI数据集的视差范围通常在0-256之间
-    num_disparities = 16 * 14  # 增加搜索范围，KITTI最大视差可达256
+    num_disparities = 16 * 10  # 增加搜索范围，KITTI最大视差可达256
     min_disparity = 0          # KITTI最小视差为0
     block_size = 7             # 适中大小，平衡精度和速度
 

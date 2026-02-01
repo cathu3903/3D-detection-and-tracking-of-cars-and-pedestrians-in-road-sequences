@@ -3,14 +3,18 @@ import numpy as np
 import os
 from ultralytics import YOLO
 #from stereo_depth_sgbc import StableDepthEstimator  # Stereo depth logic in stereo_depth_sgbc.py
-from stereo_depth_r import get_depth_map_kitti_optimized, get_depth_map_kitti_advanced
+from stereo_depth_r import get_depth_map_kitti_optimized
 
 
 class KittiStereoYoloSystemV26:
     def __init__(self, drive_path, model_path='yolo26n.pt',iou=0.6, conf=0.3):
         self.drive_path = drive_path
+        # Color images
         self.left_dir = os.path.join(drive_path, 'image_02/data')
         self.right_dir = os.path.join(drive_path, 'image_03/data')
+        # Gray images
+        # self.left_dir = os.path.join(drive_path, 'image_00/data')
+        # self.right_dir = os.path.join(drive_path, 'image_01/data')
         self.img_list = sorted(os.listdir(self.left_dir))
 
         # 1) Detector: YOLOv26 model with built-in tracking
