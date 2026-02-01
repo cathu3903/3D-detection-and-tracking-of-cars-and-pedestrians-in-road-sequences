@@ -2,13 +2,12 @@ import cv2
 import numpy as np
 import os
 from ultralytics import YOLO
-from stereo_depth_sgbc import StableDepthEstimator  # Stereo depth logic in stereo_depth_sgbc.py
+#from stereo_depth_sgbc import StableDepthEstimator  # Stereo depth logic in stereo_depth_sgbc.py
 from stereo_depth_r import get_depth_map_kitti_optimized, get_depth_map_kitti_advanced
 
 
 class KittiStereoYoloSystemV26:
-    def __init__(self, drive_path, model_path='yolo26n.pt', conf=0.25, iou=0.45, track_high_thresh=0.5,
-                 track_low_thresh=0.1, new_track_thresh=0.6):
+    def __init__(self, drive_path, model_path='yolo26n.pt',iou=0.6, conf=0.3):
         self.drive_path = drive_path
         self.left_dir = os.path.join(drive_path, 'image_02/data')
         self.right_dir = os.path.join(drive_path, 'image_03/data')
@@ -18,11 +17,6 @@ class KittiStereoYoloSystemV26:
         self.model = YOLO(model_path)
         self.conf = conf
         self.iou = iou
-
-        # Tracker parameters
-        self.track_high_thresh = track_high_thresh
-        self.track_low_thresh = track_low_thresh
-        self.new_track_thresh = new_track_thresh
 
         # Only keep vehicles and pedestrians
         self.target_names = {'person', 'car', 'bus', 'truck', 'motorcycle', 'bicycle'}
@@ -109,7 +103,7 @@ class KittiStereoYoloSystemV26:
 
         # Dictionary to store colors for each track ID
         track_colors = {}
-        estimator = StableDepthEstimator()
+        #estimator = StableDepthEstimator()
 
         for img_name in self.img_list:
             frame_l = cv2.imread(os.path.join(self.left_dir, img_name))
@@ -180,6 +174,6 @@ class KittiStereoYoloSystemV26:
 
 
 if __name__ == '__main__':
-    drive_root = './data/raw_data/2011_09_26/2011_09_26_drive_0005_sync'
+    drive_root = './data/raw_data/2011_09_26/2011_09_26_drive_0013_sync'
     system = KittiStereoYoloSystemV26(drive_root, model_path='yolo26n.pt')
     system.run()
