@@ -16,7 +16,7 @@ class KittiStereoYoloSystemV26:
         # self.right_dir = os.path.join(drive_path, "image_01/data")
         self.img_list = sorted(os.listdir(self.left_dir))
 
-        # 1) Detector: YOLOv26 model with built-in tracking
+        # Detector: YOLOv26 model with built-in tracking
         self.model = YOLO(model_path)
         self.conf = conf
 
@@ -230,6 +230,15 @@ class KittiStereoYoloSystemV26:
 
 
 if __name__ == "__main__":
-    drive_root = "./data/raw_data/2011_09_26/2011_09_26_drive_0013_sync"
-    system = KittiStereoYoloSystemV26(drive_root, model_path="yolo26n.pt")
+    drive_root_13= "./data/raw_data/2011_09_26/2011_09_26_drive_0013_sync"
+    drive_root_05 = "./data/raw_data/2011_09_26/2011_09_26_drive_0005_sync"
+    drive_root_17 = "./data/raw_data/2011_09_26/2011_09_26_drive_0017_sync"
+    drive_root_48 = "./data/raw_data/2011_09_26/2011_09_26_drive_0048_sync"
+    # system = KittiStereoYoloSystemV26(drive_root_05, model_path="yolo26n.pt")
+    # system.run()
+    # system = KittiStereoYoloSystemV26(drive_root_13, model_path="yolo26n.pt")
+    # system.run()
+    # system = KittiStereoYoloSystemV26(drive_root_17, model_path="yolo26n.pt")
+    # system.run()
+    system = KittiStereoYoloSystemV26(drive_root_48, model_path="yolo26n.pt")
     system.run()
